@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>New Transaction</title>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                  <a class="navbar-brand" href="/stockCafe">Stock Cafe</a>
+                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                      <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                      </li>
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Dropdown
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <li><a class="dropdown-item" href="#">Action</a></li>
+                          <li><a class="dropdown-item" href="#">Another action</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                      </li>
+                    </ul>
+                      <a href="/product/new"><button class="btn btn-outline-success" type="submit">+</button></a>
+                  </div>
+                </div>
+              </nav>
+        </div>
+    </div>
+    <div class="container">
+        <% if (success === "false") { %>
+            <div class="row">
+                <% if (symbol === "invalid") { %>
+                <div class="alert alert-danger" role="alert">
+                    Invalid Symbol
+                </div>
+                <% } %>
+            </div>
+        <% } %>
+        <div class="row">
+            <form method="POST" action="/stockCafe">
+                <div class="col">
+                    <label for="symbol" class="form-label">Symbol</label>
+                    <input type="text" class="form-control" name="symbol">
+                </div>
+                <div class="col">
+                    <label for="action" class="form-label">Action</label>
+                    <br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="action" id="buy" value="buy" checked>
+                        <label class="form-check-label" for="buy">Buy</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="action" id="sell" value="sell">
+                        <label class="form-check-label" for="sell">Sell</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" class="form-control" name="date">
+                </div>
+                <div class="col">
+                    <label for="units" class="form-label">Units</label>
+                    <input type="number" class="form-control" name="units">
+                </div>
+                <div class="col">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="text" class="form-control" name="price">
+                </div>
+                <div class="col mt-3">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
