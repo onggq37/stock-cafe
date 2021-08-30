@@ -87,13 +87,38 @@ app.post("/stockCafe", async (req,res) => {
                     const newUnitsBuy = stockProperty.units + stockInput.units;
                     const newPriceBuy = ((stockProperty.price * stockProperty.units) + (stockInput.price * stockInput.units))/newUnitsBuy;
                     try {
-                        await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsBuy,price: newPriceBuy }});
+                        await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsBuy, price: newPriceBuy }});
                     } catch (e) {
                         res.send(e.message);
                     }
                 } else if (req.body.action === "sell" ) {
                     const newUnitsSell = stockProperty.units - stockInput.units;
-                    const newPriceSell = ((stockProperty.price * stockProperty.units) - (stockInput.price * stockInput.units))/newUnitsSell;
+
+                    //calculating the price after selling which is can be found here https://support.zerodha.com/category/console/portfolio/articles/how-is-the-buy-average-calculated-in-q
+                    const sellList = await transactionModel.find({ symbol: `${req.body.symbol}`, action: "sell" });
+                    let sumOfSellUnits = 0;
+                    for( const element of sellList ) {
+                        sumOfSellUnits += element.units;
+                    }
+
+                    sumOfSellUnits += stockInput.units;
+                    
+                    const buyList = await transactionModel.find({ symbol: `${req.body.symbol}`, action: "buy" });
+                    let totalPrice = 0;
+                    let unitsLeft = 0;
+                    for ( const element of buyList ) {
+                        if( element.units > sumOfSellUnits ) {
+                            unitsLeft = element.units - sumOfSellUnits;
+                            totalPrice += unitsLeft * element.price;
+                            console.log(unitsLeft,totalPrice);
+
+                            sumOfSellUnits -= sumOfSellUnits;
+                        } else {
+                            sumOfSellUnits -= element.units;
+                        }
+                    }
+                    const newPriceSell = totalPrice/newUnitsSell;
+
                     if ( newUnitsSell < 0 ) {
                         res.redirect("/stockCafe/new?success=false&action=invalid");
                     } else if ( newUnitsSell === 0 ) {
@@ -104,7 +129,7 @@ app.post("/stockCafe", async (req,res) => {
                         }
                     } else {
                         try {
-                            await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsSell,price: newPriceSell }});
+                            await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsSell, price: newPriceSell }});
                         } catch (e) {
                             res.send(e.message);
                         }
