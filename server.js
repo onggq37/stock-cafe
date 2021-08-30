@@ -2,15 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const axios = require('axios').default;
 const transactionModel = require("./models/transaction")
+const stockModel = require("./models/stock")
 const methodOverride = require("method-override");
-const e = require("express");
 
 
 const app = express();
-
 const port = 3000;
-
-console.log( new Date("08/26/2021"));
 
 //Mongo Connection
 const mongoURI = "mongodb://localhost:27017/stockCafe"
@@ -28,7 +25,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
 //index
-app.get("/stockCafe", (req,res) => {
+app.get("/stockCafe", async (req,res) => {
+    const symbols = [];
+
+    //Getting all the distinct symbol from db
+    /*
+    const allStocks = await transactionModel.find().distinct('symbol');
+    for(const element of allStocks) {
+        const stockAttr = {
+            name: element,
+            units: 0,
+            price: 0,
+        }
+        symbols.push(stockAttr);
+    }
+
+    //Get all transaction from db
+    const allTrans = await transactionModel.find({});
+    console.log(allTrans);
+    for ( const element of allTrans ) {
+
+    }
+    */
     res.render("index.ejs");
 })
 
@@ -36,9 +54,11 @@ app.get("/stockCafe", (req,res) => {
 app.get("/stockCafe/new", (req,res) => {
     const success = req.query.success;
     const symbol = req.query.symbol;
+    const action = req.query.action;
     res.render("new.ejs", {
         success,
         symbol,
+        action,
     });
 })
 
@@ -50,18 +70,62 @@ app.post("/stockCafe", async (req,res) => {
         if ( getSymbolInfo.data.results === null) {
             res.redirect("/stockCafe/new?success=false&symbol=invalid");
         } else {
-            const input = {
+            const stockInput = {
+                symbol: req.body.symbol,
+                units: parseInt(req.body.units),
+                price: parseInt(req.body.price),
+            }
+            const stockArr = await stockModel.find({symbol: `${req.body.symbol}`});
+            const stockProperty = stockArr[0];
+            //Add new stock symbol into stock collection else update if exist
+            if( stockArr.length === 0 && req.body.action === "buy" ) {
+                await stockModel.create(stockInput);
+            } else if (stockArr.length === 0 && req.body.action === "sell") {
+                res.redirect("/stockCafe/new?success=false&action=invalid");
+            } else {
+                if( req.body.action === "buy" ) {
+                    const newUnitsBuy = stockProperty.units + stockInput.units;
+                    const newPriceBuy = ((stockProperty.price * stockProperty.units) + (stockInput.price * stockInput.units))/newUnitsBuy;
+                    try {
+                        await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsBuy,price: newPriceBuy }});
+                    } catch (e) {
+                        res.send(e.message);
+                    }
+                } else if (req.body.action === "sell" ) {
+                    const newUnitsSell = stockProperty.units - stockInput.units;
+                    const newPriceSell = ((stockProperty.price * stockProperty.units) - (stockInput.price * stockInput.units))/newUnitsSell;
+                    if ( newUnitsSell < 0 ) {
+                        res.redirect("/stockCafe/new?success=false&action=invalid");
+                    } else if ( newUnitsSell === 0 ) {
+                        try {
+                            await stockModel.deleteOne({ symbol: `${stockInput.symbol}` })
+                        } catch(e) {
+                            res.send(e.message);
+                        }
+                    } else {
+                        try {
+                            await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsSell,price: newPriceSell }});
+                        } catch (e) {
+                            res.send(e.message);
+                        }
+                    }
+                }
+            }
+
+            const TransInput = {
                 symbol: req.body.symbol,
                 action: req.body.action,
                 date: req.body.date,
-                units: req.body.units,
-                price: req.body.price,
+                units: parseInt(req.body.units),
+                price: parseInt(req.body.price),
             }
-            const newTransaction = await transactionModel.create(input);
+            const newTransaction = await transactionModel.create(TransInput);
+
             res.redirect("/stockCafe")
         }
     } catch (e) {
-        console.log("Error", e)
+        res.send(e.message);
+
     }
 
 
