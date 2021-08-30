@@ -63,12 +63,13 @@ app.get("/stockCafe/new", (req,res) => {
 })
 
 //create
-app.post("/stockCafe", async (req,res) => {
+app.post("/stockCafe", async (req, res, next) => {
     const symbol = req.body.symbol;
     try{
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
         if ( getSymbolInfo.data.results === null) {
             res.redirect("/stockCafe/new?success=false&symbol=invalid");
+            next();
         } else {
             const stockInput = {
                 symbol: req.body.symbol,
@@ -82,6 +83,7 @@ app.post("/stockCafe", async (req,res) => {
                 await stockModel.create(stockInput);
             } else if (stockArr.length === 0 && req.body.action === "sell") {
                 res.redirect("/stockCafe/new?success=false&action=invalid");
+                next();
             } else {
                 if( req.body.action === "buy" ) {
                     const newUnitsBuy = stockProperty.units + stockInput.units;
@@ -102,7 +104,7 @@ app.post("/stockCafe", async (req,res) => {
                     }
 
                     sumOfSellUnits += stockInput.units;
-                    
+
                     const buyList = await transactionModel.find({ symbol: `${req.body.symbol}`, action: "buy" });
                     let totalPrice = 0;
                     let unitsLeft = 0;
@@ -121,6 +123,7 @@ app.post("/stockCafe", async (req,res) => {
 
                     if ( newUnitsSell < 0 ) {
                         res.redirect("/stockCafe/new?success=false&action=invalid");
+                        next();
                     } else if ( newUnitsSell === 0 ) {
                         try {
                             await stockModel.deleteOne({ symbol: `${stockInput.symbol}` })
@@ -136,21 +139,20 @@ app.post("/stockCafe", async (req,res) => {
                     }
                 }
             }
+            console.log("here");
 
-            const TransInput = {
-                symbol: req.body.symbol,
-                action: req.body.action,
-                date: req.body.date,
-                units: parseInt(req.body.units),
-                price: parseInt(req.body.price),
-            }
-            const newTransaction = await transactionModel.create(TransInput);
-
-            res.redirect("/stockCafe")
+            // const TransInput = {
+            //     symbol: req.body.symbol,
+            //     action: req.body.action,
+            //     date: req.body.date,
+            //     units: parseInt(req.body.units),
+            //     price: parseInt(req.body.price),
+            // }
+            // const newTransaction = await transactionModel.create(TransInput);
+            // res.redirect("/stockCafe")
         }
     } catch (e) {
         res.send(e.message);
-
     }
 
 
