@@ -32,8 +32,6 @@
                       <th scope="row"><%= i %></th>
                       <td><a href="/stockCafe/<%= element._id %>/edit"><%= element.symbol %></a></td>
                       <td><%= element.name %></td>
-                      <% console.log(element.date.getMonth()) %>
-                      <% console.log(element.date) %>
                       <td><%= element.date.getDate() %>-<%= element.date.getMonth() + 1 %>-<%= element.date.getFullYear() %></td>
                       <td><%= element.action %></td>
                       <td><%= element.units %></td>

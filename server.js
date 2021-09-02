@@ -80,8 +80,8 @@ app.get('/stockCafe/seed', async (req, res) => {
 //index
 app.get("/stockCafe", async (req,res) => {
     
-    const allTrans = await transactionModel.find();
     const allStocks = await transactionModel.find().distinct('symbol');
+    const overall = [];
     console.log(allStocks);
     const overallBuy = await transactionModel.aggregate(
         [
@@ -118,12 +118,23 @@ app.get("/stockCafe", async (req,res) => {
             }
         ]
     )
-    console.log(overallBuy, overallSell);
 
-    for( const element of overallBuy ) {
-        
+    //find total units of each stock
+    for( const elementBuy of overallBuy ) {
+        const elementSell = overallSell.filter(obj => obj._id === elementBuy._id);
+        let total = elementBuy.total - elementSell[0].total;
+        overall.push({
+            _id: elementBuy._id,
+            total: total,
+        })
     }
 
+    //find average price of each stock
+    for( const element of allStocks ) {
+        const allTrans = await transactionModel.find({ symbol: element, action: "buy" }).sort('-date');
+        //get the latest number * price, go to next one multiple by price
+        console.log(allTrans);
+    }
 
 
     //Getting all the distinct symbol from db
