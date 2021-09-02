@@ -7,6 +7,10 @@ const transactionSchema = new Schema (
             type: String,
             required: true,
         },
+        name: {
+            type: String,
+            required: true,
+        },
         action: {
             type: String,
             required: true,

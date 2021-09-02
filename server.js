@@ -23,6 +23,19 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
+function formatDate(date) {
+    month = '' + (date.getMonth() + 1),
+    day = '' + date.getDate(),
+    year = date.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
 app.get('/stockCafe/seed', async (req, res) => {
     const seedTrans =
     [
@@ -68,7 +81,6 @@ app.get('/stockCafe/seed', async (req, res) => {
 app.get("/stockCafe", async (req,res) => {
     
     const allTrans = await transactionModel.find();
-    console.log(allTrans)
     const symbols = [];
     const allStocks = await transactionModel.find().distinct('symbol');
     console.log(allStocks);
@@ -130,14 +142,16 @@ app.post("/stockCafe", async (req, res, next) => {
 
     try{
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
-        console.log(getSymbolInfo.data.results);
         if ( getSymbolInfo.data.results === null) {
             res.redirect("/stockCafe/new?success=false&symbol=invalid");
         } else {
-            nameOfStock = getSymbolInfo.data.results.name.split('.');
+            console.log(getSymbolInfo.data.results);
+            apiResults = getSymbolInfo.data.results;
+            stockName = apiResults[0].name.split('.', 1)
+            console.log(stockName);
             const input = {
                 symbol: req.body.symbol,
-                name: nameOfStock[0],
+                name: stockName[0],
                 action: req.body.action,
                 date: req.body.date,
                 units: req.body.units,
@@ -150,97 +164,6 @@ app.post("/stockCafe", async (req, res, next) => {
         console.log("Error", e)
     }
 
-    /*
-    try{
-        const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
-        if ( getSymbolInfo.data.results === null) {
-            res.redirect("/stockCafe/new?success=false&symbol=invalid");
-            next();
-        } else {
-            const stockInput = {
-                symbol: req.body.symbol,
-                units: parseInt(req.body.units),
-                price: parseInt(req.body.price),
-            }
-            const stockArr = await stockModel.find({symbol: `${req.body.symbol}`});
-            const stockProperty = stockArr[0];
-            //Add new stock symbol into stock collection else update if exist
-            if( stockArr.length === 0 && req.body.action === "buy" ) {
-                await stockModel.create(stockInput);
-            } else if (stockArr.length === 0 && req.body.action === "sell") {
-                res.redirect("/stockCafe/new?success=false&action=invalid");
-                next();
-            } else {
-                if( req.body.action === "buy" ) {
-                    const newUnitsBuy = stockProperty.units + stockInput.units;
-                    const newPriceBuy = ((stockProperty.price * stockProperty.units) + (stockInput.price * stockInput.units))/newUnitsBuy;
-                    try {
-                        await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsBuy, price: newPriceBuy }});
-                    } catch (e) {
-                        res.send(e.message);
-                    }
-                } else if (req.body.action === "sell" ) {
-                    const newUnitsSell = stockProperty.units - stockInput.units;
-
-                    //calculating the price after selling which is can be found here https://support.zerodha.com/category/console/portfolio/articles/how-is-the-buy-average-calculated-in-q
-                    const sellList = await transactionModel.find({ symbol: `${req.body.symbol}`, action: "sell" });
-                    let sumOfSellUnits = 0;
-                    for( const element of sellList ) {
-                        sumOfSellUnits += element.units;
-                    }
-
-                    sumOfSellUnits += stockInput.units;
-
-                    const buyList = await transactionModel.find({ symbol: `${req.body.symbol}`, action: "buy" });
-                    let totalPrice = 0;
-                    let unitsLeft = 0;
-                    for ( const element of buyList ) {
-                        if( element.units > sumOfSellUnits ) {
-                            unitsLeft = element.units - sumOfSellUnits;
-                            totalPrice += unitsLeft * element.price;
-                            console.log(unitsLeft,totalPrice);
-
-                            sumOfSellUnits -= sumOfSellUnits;
-                        } else {
-                            sumOfSellUnits -= element.units;
-                        }
-                    }
-                    const newPriceSell = totalPrice/newUnitsSell;
-
-                    if ( newUnitsSell < 0 ) {
-                        res.redirect("/stockCafe/new?success=false&action=invalid");
-                        next();
-                    } else if ( newUnitsSell === 0 ) {
-                        try {
-                            await stockModel.deleteOne({ symbol: `${stockInput.symbol}` })
-                        } catch(e) {
-                            res.send(e.message);
-                        }
-                    } else {
-                        try {
-                            await stockModel.updateOne({ symbol : `${stockInput.symbol}`}, { $set: { units: newUnitsSell, price: newPriceSell }});
-                        } catch (e) {
-                            res.send(e.message);
-                        }
-                    }
-                }
-            }
-            console.log("here");
-
-            // const TransInput = {
-            //     symbol: req.body.symbol,
-            //     action: req.body.action,
-            //     date: req.body.date,
-            //     units: parseInt(req.body.units),
-            //     price: parseInt(req.body.price),
-            // }
-            // const newTransaction = await transactionModel.create(TransInput);
-            // res.redirect("/stockCafe")
-        }
-    } catch (e) {
-        res.send(e.message);
-    }
-    */
 
 
 });
@@ -248,6 +171,7 @@ app.post("/stockCafe", async (req, res, next) => {
 //Show
 app.get("/stockCafe/transactions", async (req,res) => {
     const transList = await transactionModel.find({}).sort('-date');
+    console.log(transList);
     res.render("transaction.ejs", {
         transList,
     } );
@@ -256,14 +180,27 @@ app.get("/stockCafe/transactions", async (req,res) => {
 //edit
 app.get("/stockCafe/:id/edit", async (req,res) => {
     const singleTrans = await transactionModel.find({ _id: `${req.params.id}` });
-    console.log(singleTrans);
-    res.send("edit");
+    const getDate = formatDate(singleTrans[0].date)
+    res.render("edit.ejs",{
+        singleTrans: singleTrans[0],
+        date: getDate,
+    });
 })
 
 //update
-app.put("/stockCafe/:id", (req,res) => {
-    console.log("update");
-    res.redirect(`stockCafe/${req.params.id}`)
+app.put("/stockCafe/:id", async (req,res) => {
+    await transactionModel.updateOne(
+        { _id: req.params.id },
+        { $set: 
+            {
+                action: req.body.action,
+                date: req.body.date,    
+                units: req.body.units,
+                price: req.body.price,
+            }
+        }
+    )
+    res.redirect("/stockCafe/transactions")
 })
 
 //destroy
