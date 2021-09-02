@@ -1,43 +1,52 @@
 <%- include ("./partials/header") %>
     <div class="container">
-        <h1 class='h4'><%= singleTrans.name %> (<%= singleTrans.symbol %>)</h1>
-        <form method="POST" action="/stockCafe/<%= singleTrans._id %>?_method=PUT">
-            <div class="col">
-                <label for="action" class="form-label">Action</label>
-                <br>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="action" id="buy" value="buy" checked>
-                    <% if (singleTrans.action === 'buy') { %>
-                        <label class="form-check-label" for="buy" checked>Buy</label>
-                    <% } else { %> 
-                        <label class="form-check-label" for="buy">Buy</label>
-                    <% } %>
+        <div class="row align-items-center">
+            <h1 class="col-11 h4"><%= singleTrans.name %> (<%= singleTrans.symbol %>)</h1>
+            <form method="POST" action="/stockCafe/<%= singleTrans.id %>?_method=DELETE" class="col-1">
+                <div class="mt-3">
+                <input type="submit" class="btn btn-danger mb-3" value="Delete" />
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="action" id="sell" value="sell">
-                    <% if (singleTrans.action === 'sell') { %>
-                        <label class="form-check-label" for="sell" checked>Sell</label>
-                    <% } else { %> 
-                        <label class="form-check-label" for="sell">Sell</label>
-                    <% } %>
+            </form>
+        </div>
+        <div class="row">
+            <form method="POST" action="/stockCafe/<%= singleTrans._id %>?_method=PUT">
+                <div class="col">
+                    <label for="action" class="form-label">Action</label>
+                    <br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="action" id="buy" value="buy" checked>
+                        <% if (singleTrans.action === 'buy') { %>
+                            <label class="form-check-label" for="buy" checked>Buy</label>
+                        <% } else { %> 
+                            <label class="form-check-label" for="buy">Buy</label>
+                        <% } %>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="action" id="sell" value="sell">
+                        <% if (singleTrans.action === 'sell') { %>
+                            <label class="form-check-label" for="sell" checked>Sell</label>
+                        <% } else { %> 
+                            <label class="form-check-label" for="sell">Sell</label>
+                        <% } %>
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <label for="date" class="form-label">Date</label>
-                <input type="date" class="form-control" name="date" value="<%= date %>">
-            </div>
-            <div class="col">
-                <label for="units" class="form-label">Units</label>
-                <input type="number" class="form-control" name="units" value="<%= singleTrans.units %>">
-            </div>
-            <div class="col">
-                <label for="price" class="form-label">Price</label>
-                <input type="text" class="form-control" name="price" value="<%= singleTrans.price %>">
-            </div>
-            <div class="col mt-3">
-                <button type="submit" class="btn btn-primary">Update</button>
-            </div>
-        </form>
+                <div class="col">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" class="form-control" name="date" value="<%= date %>">
+                </div>
+                <div class="col">
+                    <label for="units" class="form-label">Units</label>
+                    <input type="number" class="form-control" name="units" value="<%= singleTrans.units %>">
+                </div>
+                <div class="col">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="text" class="form-control" name="price" value="<%= singleTrans.price %>">
+                </div>
+                <div class="col mt-3">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 </html>

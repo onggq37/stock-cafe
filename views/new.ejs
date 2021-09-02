@@ -2,15 +2,11 @@
     <div class="container">
         <% if (success === "false") { %>
             <div class="row">
-                <% if (symbol === "invalid") { %>
+                <% if (action === "symbol") { %>
                     <div class="alert alert-danger" role="alert">
                         Invalid Symbol
                     </div>
-                <% } else if (action === "invalid" ) { %>
-                    <div class="alert alert-danger" role="alert">
-                        Invalid Action
-                    </div>
-                <% } %>    
+                <% } %>
             </div>
         <% } %>
         <div class="row">

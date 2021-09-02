@@ -81,7 +81,6 @@ app.get('/stockCafe/seed', async (req, res) => {
 app.get("/stockCafe", async (req,res) => {
     
     const allTrans = await transactionModel.find();
-    const symbols = [];
     const allStocks = await transactionModel.find().distinct('symbol');
     console.log(allStocks);
     const overallBuy = await transactionModel.aggregate(
@@ -101,6 +100,31 @@ app.get("/stockCafe", async (req,res) => {
             }
         ]
     )
+    
+    const overallSell = await transactionModel.aggregate(
+        [
+            {
+                $match: {
+                    action: "sell"
+                }
+            },
+            {
+                $group: {
+                    _id: "$symbol", 
+                    total: {
+                        $sum: "$units"
+                    }
+                }
+            }
+        ]
+    )
+    console.log(overallBuy, overallSell);
+
+    for( const element of overallBuy ) {
+        
+    }
+
+
 
     //Getting all the distinct symbol from db
     
@@ -127,11 +151,9 @@ app.get("/stockCafe", async (req,res) => {
 //new
 app.get("/stockCafe/new", (req,res) => {
     const success = req.query.success;
-    const symbol = req.query.symbol;
     const action = req.query.action;
     res.render("new.ejs", {
         success,
-        symbol,
         action,
     });
 })
@@ -143,12 +165,10 @@ app.post("/stockCafe", async (req, res, next) => {
     try{
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
         if ( getSymbolInfo.data.results === null) {
-            res.redirect("/stockCafe/new?success=false&symbol=invalid");
+            res.redirect("/stockCafe/new?success=false&action=symbol");
         } else {
-            console.log(getSymbolInfo.data.results);
             apiResults = getSymbolInfo.data.results;
             stockName = apiResults[0].name.split('.', 1)
-            console.log(stockName);
             const input = {
                 symbol: req.body.symbol,
                 name: stockName[0],
@@ -170,10 +190,13 @@ app.post("/stockCafe", async (req, res, next) => {
 
 //Show
 app.get("/stockCafe/transactions", async (req,res) => {
+    const success = req.query.success;
+    const action = req.query.action;
     const transList = await transactionModel.find({}).sort('-date');
-    console.log(transList);
     res.render("transaction.ejs", {
         transList,
+        success,
+        action,
     } );
 })
 
@@ -200,13 +223,13 @@ app.put("/stockCafe/:id", async (req,res) => {
             }
         }
     )
-    res.redirect("/stockCafe/transactions")
+    res.redirect("/stockCafe/transactions?success=true&action=update")
 })
 
 //destroy
-app.delete("/stockCafe", (req,res) => {
-    console.log("delete");
-    res.redirect("/stockCafe")
+app.delete("/stockCafe/:id", async (req,res) => {
+    await transactionModel.deleteOne({ _id: req.params.id});
+    res.redirect("/stockCafe/transactions?success=true&action=delete")
 })
 
 app.listen(port, () => {
