@@ -81,8 +81,7 @@ app.get('/stockCafe/seed', async (req, res) => {
 app.get("/stockCafe", async (req,res) => {
     
     const allStocks = await transactionModel.find().distinct('symbol');
-    const overall = [];
-    console.log(allStocks);
+    const overallPortfolio = [];
     const overallBuy = await transactionModel.aggregate(
         [
             {
@@ -92,7 +91,7 @@ app.get("/stockCafe", async (req,res) => {
             },
             {
                 $group: {
-                    _id: "$symbol", 
+                    _id: "$symbol",
                     total: {
                         $sum: "$units"
                     }
@@ -122,41 +121,53 @@ app.get("/stockCafe", async (req,res) => {
     //find total units of each stock
     for( const elementBuy of overallBuy ) {
         const elementSell = overallSell.filter(obj => obj._id === elementBuy._id);
-        let total = elementBuy.total - elementSell[0].total;
-        overall.push({
+        let totalUnits = 0;
+
+        if( elementSell.length <= 0 ){
+            totalUnits = elementBuy.total;
+        }
+        else {
+            totalUnits = elementBuy.total - elementSell[0].total;
+        }
+
+        overallPortfolio.push({
             _id: elementBuy._id,
-            total: total,
+            totalUnits: totalUnits,
         })
     }
 
     //find average price of each stock
-    for( const element of allStocks ) {
-        const allTrans = await transactionModel.find({ symbol: element, action: "buy" }).sort('-date');
-        //get the latest number * price, go to next one multiple by price
-        console.log(allTrans);
-    }
-
-
-    //Getting all the distinct symbol from db
-    
-    /*
-    for(const element of allStocks) {
-        const stockAttr = {
-            name: element,
-            units: 0,
-            price: 0,
+    for( let i=0; i<overallPortfolio.length; i++ ) {
+        const allTrans = await transactionModel.find({ symbol: overallPortfolio[i]._id, action: "buy" }).sort('-date');
+        let calUnits = overallPortfolio[i].totalUnits;
+        let totalPrice = 0;
+        let avgPrice = 0;
+        //take number of units left and calculate the total price from the latest transaction
+        for ( const transaction of allTrans ) {
+            if( transaction.units - calUnits < 0 ) {
+                totalPrice += transaction.units * transaction.price;
+                calUnits -= transaction.units;
+            } else {
+                totalPrice += calUnits * transaction.price;
+                break;
+            }
         }
-        symbols.push(stockAttr);
+        
+        avgPrice = totalPrice/overallPortfolio[i].totalUnits;
+        
+        overallPortfolio[i]['name'] = allTrans[0].name;
+        overallPortfolio[i]['avgPrice'] = avgPrice;
+        const prevClose = await axios.get(`https://api.polygon.io/v2/aggs/ticker/${overallPortfolio[i]._id}/prev?adjusted=true&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`);
+        overallPortfolio[i]['close'] = prevClose.data.results[0].c;
+        overallPortfolio[i]['value'] = overallPortfolio[i].totalUnits * prevClose.data.results[0].c;
+        overallPortfolio[i]['pnl'] = (overallPortfolio[i].close - overallPortfolio[i].avgPrice) * overallPortfolio[i].totalUnits;
+        overallPortfolio[i]['pnlPercent'] = overallPortfolio[i].pnl/(overallPortfolio[i].avgPrice * overallPortfolio[i].totalUnits) * 100;
+        console.log(overallPortfolio);
     }
 
-    //Get all transaction from db
-    const allTrans = await transactionModel.find({});
-    console.log(allTrans);
-    for ( const element of allTrans ) {
-
-    }
-    */
-    res.render("index.ejs");
+    res.render("index.ejs", {
+        overallPortfolio,
+    });
 })
 
 //new
@@ -183,6 +194,7 @@ app.post("/stockCafe", async (req, res, next) => {
             const input = {
                 symbol: req.body.symbol,
                 name: stockName[0],
+                type: apiResults[0].type,
                 action: req.body.action,
                 date: req.body.date,
                 units: req.body.units,
@@ -194,8 +206,6 @@ app.post("/stockCafe", async (req, res, next) => {
     } catch (e) {
         console.log("Error", e)
     }
-
-
 
 });
 

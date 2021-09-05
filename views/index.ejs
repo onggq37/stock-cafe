@@ -1,4 +1,5 @@
 <%- include ("./partials/header.ejs") %>
+    <div class="container">
         <div class="row">
             <div class="col">
                 Overview
@@ -6,11 +7,39 @@
         </div>
         <div class="row">
             <div class="col">
-                Total Portfolio
-            </div>
-            <div class="col">
-                USD
+                Portfolio
             </div>
         </div>
+        <% for(const element of overallPortfolio) { %>
+            <table class="table">
+                <tr>
+                    <td class="col-10"><%= element.name %> (<%= element._id %>)</td>
+                    <% if( element.pnl > 0 ) { %>
+                        <td class="text-success">+<%= element.pnl.toFixed(2) %> (+<%= element.pnlPercent.toFixed(2) %>%)<td>
+                    <% } else if (element.pnl < 0 ) { %> 
+                        <td class="text-danger"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                    <% } else { %> 
+                        <td class="text-secondary"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                    <% } %>
+                </tr>
+                <tr>
+                    <td class="col-10">Average Price</td>
+                    <td class="col"><%= element.avgPrice.toFixed(2) %></td>
+                </tr>
+                <tr>
+                    <td class="col-10">Latest Close</td>
+                    <td class="col"><%= element.close %></td>
+                </tr>
+                <tr>
+                    <td class="col-10">Value</td>
+                    <td class="col"><%= element.value.toFixed(2) %></td>
+                </tr>
+                <tr>
+                    <td class="col-10">Shares</td>
+                    <td class="col"><%= element.totalUnits %></td>
+                </tr>
+            </table>
+        <% } %> 
+    </div>
 </body>
 </html>
