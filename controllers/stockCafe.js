@@ -1,4 +1,6 @@
 const express = require("express");
+const axios = require('axios').default;
+const transactionModel = require("../models/transaction")
 const router = express.Router();
 
 function formatDate(date) {
@@ -149,7 +151,6 @@ router.get("/", async (req,res) => {
     let overallSum = 0;
     let overallCost = 0;
     for (const element of overallPortfolio) {
-        console.log(element);
         overallSum += element.value;
         overallCost += (element.avgPrice * element.totalUnits);
     }
@@ -163,8 +164,6 @@ router.get("/", async (req,res) => {
         overallPnl,
         overallPnlPercent,
     };
-
-    console.log(summary);
 
     res.render("index.ejs", {
         overallPortfolio,

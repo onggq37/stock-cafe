@@ -1,7 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const axios = require('axios').default;
-const transactionModel = require("./models/transaction")
 const methodOverride = require("method-override");
 const stockCafeRoute = require('./controllers/stockCafe')
 
@@ -22,7 +20,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.use('./stockCafe', stockCafeRoute);
+app.use('/stockCafe', stockCafeRoute);
 
 app.listen(port, () => {
     console.log("hello world");
