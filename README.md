@@ -6,7 +6,8 @@ thing i want to add
 - cant sell if you dont have shares
 - add fee
 - add Ticker type and Pie chart
-
+- add daily p&l
+- issue w
     /*
     try{
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)

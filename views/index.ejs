@@ -1,45 +1,74 @@
 <%- include ("./partials/header.ejs") %>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                Overview
+    <% if(overallPortfolio.length > 0) { %>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="h5">Overview</h3>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                Portfolio
-            </div>
-        </div>
-        <% for(const element of overallPortfolio) { %>
             <table class="table">
                 <tr>
-                    <td class="col-10"><%= element.name %> (<%= element._id %>)</td>
-                    <% if( element.pnl > 0 ) { %>
-                        <td class="text-success">+<%= element.pnl.toFixed(2) %> (+<%= element.pnlPercent.toFixed(2) %>%)<td>
-                    <% } else if (element.pnl < 0 ) { %> 
-                        <td class="text-danger"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                    <td class="col-10">Total</td>
+                    <td>USD <%= summary.overallSum %></td>
+                </tr>
+                <tr>
+                    <td class="col-10">P&L</td>
+                    <% if( summary.overallPnl > 0 ) { %>
+                        <td class="text-success">+<%= summary.overallPnl.toFixed(2) %> (+<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                    <% } else if (summary.overallPnl < 0 ) { %> 
+                        <td class="text-danger"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
                     <% } else { %> 
-                        <td class="text-secondary"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                        <td class="text-secondary"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
                     <% } %>
                 </tr>
-                <tr>
-                    <td class="col-10">Average Price</td>
-                    <td class="col"><%= element.avgPrice.toFixed(2) %></td>
-                </tr>
-                <tr>
-                    <td class="col-10">Latest Close</td>
-                    <td class="col"><%= element.close %></td>
-                </tr>
-                <tr>
-                    <td class="col-10">Value</td>
-                    <td class="col"><%= element.value.toFixed(2) %></td>
-                </tr>
-                <tr>
-                    <td class="col-10">Shares</td>
-                    <td class="col"><%= element.totalUnits %></td>
-                </tr>
             </table>
-        <% } %> 
-    </div>
+            <div class="row">
+                <div class="col">
+                    <h3 class="h5">Portfolio</h3>
+                </div>
+            </div>
+            <% for(const element of overallPortfolio) { %>
+                <table class="table">
+                    <tr>
+                        <td colspan="2"><%= element.name %> (<%= element._id %>)</td>
+                    </tr>
+                    <tr>
+                        <td class="col-10">P&L</td>
+                        <% if( element.pnl > 0 ) { %>
+                            <td class="text-success">+<%= element.pnl.toFixed(2) %> (+<%= element.pnlPercent.toFixed(2) %>%)<td>
+                        <% } else if (element.pnl < 0 ) { %> 
+                            <td class="text-danger"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                        <% } else { %> 
+                            <td class="text-secondary"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                        <% } %>
+                    </tr>
+                    <tr>
+                        <td class="col-10">Average Price</td>
+                        <td class="col"><%= element.avgPrice.toFixed(2) %></td>
+                    </tr>
+                    <tr>
+                        <td class="col-10">Latest Close</td>
+                        <td class="col"><%= element.close %></td>
+                    </tr>
+                    <tr>
+                        <td class="col-10">Shares</td>
+                        <td class="col"><%= element.totalUnits %></td>
+                    </tr>
+                    <tr>
+                        <td class="col-10">Value</td>
+                        <td class="col">USD <%= element.value.toFixed(2) %></td>
+                    </tr>
+                </table>
+            <% } %> 
+        </div>
+    <% } else { %>
+        <div class="Container">
+            <div class="row justify-content-center">
+                <div class="col-4 align-self-center text-center">
+                    <h3>Please Add Transaction</h3>
+                </div>
+            </div>
+        </div>    
+    <% } %>
 </body>
 </html>
