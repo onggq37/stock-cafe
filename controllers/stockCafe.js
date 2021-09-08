@@ -165,9 +165,14 @@ router.get("/", async (req,res) => {
         overallPnlPercent,
     };
 
-    res.render("index.ejs", {
+    const success = req.query.success;
+    const action = req.query.action;
+    res.render("stock/index.ejs", {
         overallPortfolio,
         summary,
+        action,
+        success,
+
     });
 })
 
@@ -175,7 +180,7 @@ router.get("/", async (req,res) => {
 router.get("/new", (req,res) => {
     const success = req.query.success;
     const action = req.query.action;
-    res.render("new.ejs", {
+    res.render("stock/new.ejs", {
         success,
         action,
     });
@@ -202,7 +207,8 @@ router.post("/", async (req, res, next) => {
                 price: req.body.price,
             }
             const newTransaction = await transactionModel.create(input);
-            res.redirect("/stockCafe")
+            //req.flash("correct","correctly")
+            res.redirect("/stockCafe");
         }
     } catch (e) {
         console.log("Error", e)
@@ -215,7 +221,7 @@ router.get("/transactions", async (req,res) => {
     const success = req.query.success;
     const action = req.query.action;
     const transList = await transactionModel.find({}).sort('-date');
-    res.render("transaction.ejs", {
+    res.render("stock/transaction.ejs", {
         transList,
         success,
         action,
@@ -226,7 +232,7 @@ router.get("/transactions", async (req,res) => {
 router.get("/:id/edit", async (req,res) => {
     const singleTrans = await transactionModel.find({ _id: `${req.params.id}` });
     const getDate = formatDate(singleTrans[0].date)
-    res.render("edit.ejs",{
+    res.render("stock/edit.ejs",{
         singleTrans: singleTrans[0],
         date: getDate,
     });
