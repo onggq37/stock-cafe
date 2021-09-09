@@ -7,4 +7,4 @@ thing i want to add
 - add fee
 - add Ticker type and Pie chart
 - add daily p&l
-- issue with router
+- handle error

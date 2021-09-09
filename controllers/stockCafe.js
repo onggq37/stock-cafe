@@ -1,7 +1,8 @@
 const express = require("express");
 const axios = require('axios').default;
-const transactionModel = require("../models/transaction")
+const transactionModel = require("../models/transaction");
 const router = express.Router();
+const { isLoggedIn } = require('../middleware.js');
 
 function formatDate(date) {
     month = '' + (date.getMonth() + 1),
@@ -62,8 +63,8 @@ router.get('/seed', async (req, res) => {
 });
 
 //index
-router.get("/", async (req,res) => {
-    
+router.get("/", isLoggedIn, async (req,res) => {
+
     const allStocks = await transactionModel.find().distinct('symbol');
     const overallPortfolio = [];
     const overallBuy = await transactionModel.aggregate(
@@ -165,35 +166,26 @@ router.get("/", async (req,res) => {
         overallPnlPercent,
     };
 
-    const success = req.query.success;
-    const action = req.query.action;
     res.render("stock/index.ejs", {
         overallPortfolio,
         summary,
-        action,
-        success,
-
     });
 })
 
 //new
 router.get("/new", (req,res) => {
-    const success = req.query.success;
-    const action = req.query.action;
     res.render("stock/new.ejs", {
-        success,
-        action,
     });
 })
 
 //create
 router.post("/", async (req, res, next) => {
     const symbol = req.body.symbol;
-
     try{
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
         if ( getSymbolInfo.data.results === null) {
-            res.redirect("/stockCafe/new?success=false&action=symbol");
+            req.flash("error","Symbol not found")
+            res.redirect("/stockCafe/new");
         } else {
             apiResults = getSymbolInfo.data.results;
             stockName = apiResults[0].name.split('.', 1)
@@ -207,8 +199,8 @@ router.post("/", async (req, res, next) => {
                 price: req.body.price,
             }
             const newTransaction = await transactionModel.create(input);
-            //req.flash("correct","correctly")
-            res.redirect("/stockCafe");
+            req.flash("success", "Successfully added a transaction")
+            res.redirect("/stockCafe/transactions");
         }
     } catch (e) {
         console.log("Error", e)
@@ -218,13 +210,9 @@ router.post("/", async (req, res, next) => {
 
 //Show
 router.get("/transactions", async (req,res) => {
-    const success = req.query.success;
-    const action = req.query.action;
     const transList = await transactionModel.find({}).sort('-date');
     res.render("stock/transaction.ejs", {
         transList,
-        success,
-        action,
     } );
 })
 
@@ -251,13 +239,15 @@ router.put("/:id", async (req,res) => {
             }
         }
     )
-    res.redirect("/stockCafe/transactions?success=true&action=update")
+    req.flash("success", "Transaction updated successfully")
+    res.redirect("/stockCafe/transactions")
 })
 
 //destroy
 router.delete("/:id", async (req,res) => {
     await transactionModel.deleteOne({ _id: req.params.id});
-    res.redirect("/stockCafe/transactions?success=true&action=delete")
+    req.flash("success","Transaction deleted successfully")
+    res.redirect("/stockCafe/transactions")
 })
 
 module.exports = router;

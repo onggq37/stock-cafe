@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require('express-session');
+const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -23,7 +24,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 })
 
 const sessionConfig = {
-    secret: 'stockCafeSecretNobodyKnows!',
+    secret: 'stockCafeSecret!',
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -35,23 +36,24 @@ const sessionConfig = {
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
-app.use('/stockCafe', stockCafeRoute);
-app.use('/', userAuthRoute);
-app.use(session(sessionConfig));
+app.use(methodOverride("_method"));
+app.use(session(sessionConfig))
 app.use(flash());
-
-app.use((req,res,next) => {
-    res.local.correct = req.flash('correct');
-    next();
-})
-
 app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(new LocalStrategy(User.authenticate())); //use local strategy, use method call authenticate from user model
-
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+app.use((req,res,next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+app.use('/stockCafe', stockCafeRoute);
+app.use('/', userAuthRoute);
 
 app.listen(port, () => {
     console.log("hello world");
