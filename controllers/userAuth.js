@@ -31,4 +31,9 @@ router.post('/login', passport.authenticate('local', { failureFlash: true, failu
     res.redirect('/stockCafe');
 })
 
+router.get('/logout', (req,res) => {
+    req.logout();
+    req.flash("success", "See you soon, goodbye!");
+    res.redirect('/login');
+})
 module.exports = router;

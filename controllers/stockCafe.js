@@ -173,13 +173,13 @@ router.get("/", isLoggedIn, async (req,res) => {
 })
 
 //new
-router.get("/new", (req,res) => {
+router.get("/new", isLoggedIn, (req,res) => {
     res.render("stock/new.ejs", {
     });
 })
 
 //create
-router.post("/", async (req, res, next) => {
+router.post("/", isLoggedIn, async (req, res, next) => {
     const symbol = req.body.symbol;
     try{
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
@@ -209,7 +209,7 @@ router.post("/", async (req, res, next) => {
 });
 
 //Show
-router.get("/transactions", async (req,res) => {
+router.get("/transactions", isLoggedIn, async (req,res) => {
     const transList = await transactionModel.find({}).sort('-date');
     res.render("stock/transaction.ejs", {
         transList,
@@ -217,7 +217,7 @@ router.get("/transactions", async (req,res) => {
 })
 
 //edit
-router.get("/:id/edit", async (req,res) => {
+router.get("/:id/edit", isLoggedIn, async (req,res) => {
     const singleTrans = await transactionModel.find({ _id: `${req.params.id}` });
     const getDate = formatDate(singleTrans[0].date)
     res.render("stock/edit.ejs",{
@@ -227,7 +227,7 @@ router.get("/:id/edit", async (req,res) => {
 })
 
 //update
-router.put("/:id", async (req,res) => {
+router.put("/:id", isLoggedIn, async (req,res) => {
     await transactionModel.updateOne(
         { _id: req.params.id },
         { $set: 
@@ -244,7 +244,7 @@ router.put("/:id", async (req,res) => {
 })
 
 //destroy
-router.delete("/:id", async (req,res) => {
+router.delete("/:id", isLoggedIn, async (req,res) => {
     await transactionModel.deleteOne({ _id: req.params.id});
     req.flash("success","Transaction deleted successfully")
     res.redirect("/stockCafe/transactions")
