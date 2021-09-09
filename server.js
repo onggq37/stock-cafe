@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require('express-session');
@@ -7,13 +8,13 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 const stockCafeRoute = require('./controllers/stockCafe');
 const userAuthRoute = require('./controllers/userAuth');
 
 //Mongo Connection
-const mongoURI = "mongodb://localhost:27017/stockCafe"
+const mongoURI = process.env.MONGOURL;
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => {
     console.log("connection open!")
@@ -24,7 +25,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 })
 
 const sessionConfig = {
-    secret: 'stockCafeSecret!',
+    secret: process.env.SESSIONSECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -56,6 +57,6 @@ app.use((req,res,next) => {
 app.use('/stockCafe', stockCafeRoute);
 app.use('/', userAuthRoute);
 
-app.listen(port, () => {
+app.listen(process.env.PORT, () => {
     console.log("hello world");
 })
