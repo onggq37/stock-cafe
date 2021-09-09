@@ -4,7 +4,6 @@ const passport= require('passport');
 const User = require('../models/user')
 
 router.get('/register', (req,res) => {
-    console.log('here')
     res.render('users/register.ejs');
 });
 
@@ -13,13 +12,18 @@ router.post('/register', async(req,res) => {
         const { username, password } = req.body;    
         const user = new User({ username });
         const newUser = await User.register(user, password);
-        req.flash('success', 'Welcome to Stock Cafe!'); 
-        res.redirect('/stockCafe')
+        req.login( newUser, err => {
+            if(err) {
+                return next(err);
+            } else {
+                req.flash('success', 'Welcome to Stock Cafe!'); 
+                res.redirect('/stockCafe')
+            }
+        });
     } catch(e) {
         req.flash('error', e.message);
         res.redirect('/register');
     }
-
 })
 
 router.get('/login', (req,res) => {
