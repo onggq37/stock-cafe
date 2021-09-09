@@ -1,15 +1,6 @@
 <%- include ("../partials/header.ejs") %>
     <% if(overallPortfolio.length > 0) { %>
         <div class="container">
-            <% if (success === "true") { %>
-                <div class="row">
-                    <% if (action === "register") { %>
-                        <div class="alert alert-success" role="alert">
-                            Welcome to Stock Cafe
-                        </div>
-                    <% } %>
-                </div>
-            <% } %>
             <div class="row">
                 <div class="col">
                     <h3 class="h5">Overview</h3>
@@ -19,17 +10,22 @@
                 <tr>
                     <td class="col-10">Total</td>
                     <td>USD <%= summary.overallSum %></td>
+                    <td><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOverview" aria-expanded="false" aria-controls="collapseOverview">+</button></td>
                 </tr>
-                <tr>
-                    <td class="col-10">P&L</td>
-                    <% if( summary.overallPnl > 0 ) { %>
-                        <td class="text-success">+<%= summary.overallPnl.toFixed(2) %> (+<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
-                    <% } else if (summary.overallPnl < 0 ) { %> 
-                        <td class="text-danger"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
-                    <% } else { %> 
-                        <td class="text-secondary"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
-                    <% } %>
-                </tr>
+                <div class="collapse" id='collapseOverview'>
+                    <div class="card card-body">
+                        <tr>
+                            <td class="col-10">P&L</td>
+                                <% if( summary.overallPnl > 0 ) { %>
+                                    <td class="text-success">+<%= summary.overallPnl.toFixed(2) %> (+<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                                <% } else if (summary.overallPnl < 0 ) { %> 
+                                    <td class="text-danger"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                                <% } else { %> 
+                                    <td class="text-secondary"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                                <% } %>
+                        </tr>
+                    </div>
+                </div>
             </table>
             <div class="row">
                 <div class="col">

@@ -1,18 +1,5 @@
 <%- include ("../partials/header") %>
     <div class="container">
-      <% if (success === "true") { %>
-        <div class="row">
-            <% if (action === "update") { %>
-                <div class="alert alert-success" role="alert">
-                    Transaction Updated
-                </div>
-            <% } else if (action === "delete") { %>
-                <div class="alert alert-success" role="alert">
-                  Transaction Deleted
-                </div>
-            <% } %>
-        </div>
-      <% } %>
       <table class="table table-striped table-hover row-clickable">
           <thead>
             <tr>

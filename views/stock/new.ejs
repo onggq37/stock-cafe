@@ -1,14 +1,5 @@
 <%- include ("../partials/header") %>
     <div class="container">
-        <% if (success === "false") { %>
-            <div class="row">
-                <% if (action === "symbol") { %>
-                    <div class="alert alert-danger" role="alert">
-                        Invalid Symbol
-                    </div>
-                <% } %>
-            </div>
-        <% } %>
         <div class="row">
             <form method="POST" action="/stockCafe">
                 <div class="col">
