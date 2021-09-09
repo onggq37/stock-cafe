@@ -26,7 +26,7 @@ router.post('/register', async(req,res) => {
     }
 })
 
-router.get('/login', (req,res) => {
+router.get('/', (req,res) => {
     res.render('users/login.ejs')
 })
 
