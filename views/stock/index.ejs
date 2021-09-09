@@ -10,22 +10,18 @@
                 <tr>
                     <td class="col-10">Total</td>
                     <td>USD <%= summary.overallSum %></td>
-                    <td><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOverview" aria-expanded="false" aria-controls="collapseOverview">+</button></td>
+                    <td><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#pnlContainer" aria-expanded="false" aria-controls="collapseOverview">+</button></td>
                 </tr>
-                <div class="collapse" id='collapseOverview'>
-                    <div class="card card-body">
-                        <tr>
-                            <td class="col-10">P&L</td>
-                                <% if( summary.overallPnl > 0 ) { %>
-                                    <td class="text-success">+<%= summary.overallPnl.toFixed(2) %> (+<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
-                                <% } else if (summary.overallPnl < 0 ) { %> 
-                                    <td class="text-danger"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
-                                <% } else { %> 
-                                    <td class="text-secondary"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
-                                <% } %>
-                        </tr>
-                    </div>
-                </div>
+                <tr class="collapse " id='pnlContainer'>
+                    <td class="col-10">P&L</td>
+                        <% if( summary.overallPnl > 0 ) { %>
+                            <td class="text-success">+<%= summary.overallPnl.toFixed(2) %> (+<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                        <% } else if (summary.overallPnl < 0 ) { %> 
+                            <td class="text-danger"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                        <% } else { %> 
+                            <td class="text-secondary"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                        <% } %>
+                </tr>
             </table>
             <div class="row">
                 <div class="col">
