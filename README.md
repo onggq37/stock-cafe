@@ -19,9 +19,10 @@ Create homepage and styling
 style login and register page
 
 thing i want to add
-- make row in table clickable instead of just the symbol
-- cant sell if you dont have shares
+- Add diviend
 - add fee
 - add Ticker type and Pie chart
 - add daily p&l
 - handle error properly
+- add password strength
+- add authroization
