@@ -156,7 +156,6 @@ router.get("/", isLoggedIn, async (req,res) => {
         }
     };
 
-    console.log(overallPortfolio);
 
     res.render("stock/index.ejs", {
         overallPortfolio,
@@ -195,7 +194,8 @@ router.post("/", isLoggedIn, async (req, res, next) => {
             res.redirect("/stockCafe/transactions");
         }
     } catch (e) {
-        console.log("Error", e)
+        req.flash('error', "Missing field/s");
+        res.redirect('/stockCafe/new');
     }
 
 });
@@ -220,26 +220,37 @@ router.get("/:id/edit", isLoggedIn, async (req,res) => {
 
 //update
 router.put("/:id", isLoggedIn, async (req,res) => {
-    await transactionModel.updateOne(
-        { _id: req.params.id },
-        { $set: 
-            {
-                action: req.body.action,
-                date: req.body.date,    
-                units: req.body.units,
-                price: req.body.price,
+    try {
+        await transactionModel.updateOne(
+            { _id: req.params.id },
+            { $set: 
+                {
+                    action: req.body.action,
+                    date: req.body.date,    
+                    units: req.body.units,
+                    price: req.body.price,
+                }
             }
-        }
-    )
-    req.flash("success", "Transaction updated successfully")
-    res.redirect("/stockCafe/transactions")
+        )
+        req.flash("success", "Transaction updated successfully")
+        res.redirect("/stockCafe/transactions")
+    } catch(e) {
+
+    }
+
 })
 
 //destroy
 router.delete("/:id", isLoggedIn, async (req,res) => {
-    await transactionModel.deleteOne({ _id: req.params.id});
-    req.flash("success","Transaction deleted successfully")
-    res.redirect("/stockCafe/transactions")
+    try {
+        await transactionModel.deleteOne({ _id: req.params.id});
+        req.flash("success","Transaction deleted successfully")
+        res.redirect("/stockCafe/transactions")
+    } catch(e) {
+        req.flash('error', "Fail to delete. Please try again.");
+        res.redirect(`/stockCafe/${req.params.id}`);
+    }
+
 })
 
 module.exports = router;
