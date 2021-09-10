@@ -21,47 +21,6 @@ function numberWithCommas(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-router.get('/seed', async (req, res) => {
-    const seedTrans =
-    [
-        {
-          symbol: 'TSLA',
-          action: 'buy',
-          date: new date("2021-08-10T00:00:00.000Z"),
-          units: 10,
-          price: 500,
-        },
-        {
-          symbol: 'TSLA',
-          action: 'buy',
-          date: new date("2021-08-10T00:00:00.000Z"),
-          units: 5,
-          price: 250,
-        },
-        {
-          symbol: 'TSLA',
-          action: 'buy',
-          date: new date("2021-08-11T00:00:00.000Z"),
-          units: 1,
-          price: 750,
-        },
-        {
-          symbol: 'TSLA',
-          action: 'sell',
-          date: new date("2021-08-04T00:00:00.000Z"),
-          units: 6,
-          price: 600,
-        }
-      ]
-  
-    try {
-      const seedItems = await transactionModel.create(seedTrans)
-      res.send(seedItems)
-    } catch (err) {
-      res.send(err.message)
-    }
-});
-
 //index
 router.get("/", isLoggedIn, async (req,res) => {
 
@@ -156,15 +115,48 @@ router.get("/", isLoggedIn, async (req,res) => {
         overallCost += (element.avgPrice * element.totalUnits);
     }
 
-    const overallPnl = overallSum - overallCost;
-    const overallPnlPercent = (overallPnl/overallCost) * 100;
+    let overallPnl = overallSum - overallCost;
+    let overallPnlPercent = (overallPnl/overallCost) * 100;
+    let overallPnlColor = 0;
 
-    overallSum = numberWithCommas(overallSum.toFixed(2))
+    if (overallPnl > 0){
+        overallPnlColor = 1;
+    } else if (overallPnl < 0) {
+        overallPnlColor = -1;
+    } else {
+        overallPnlColor = 0;
+    }
+
+    overallPnl = numberWithCommas(overallPnl.toFixed(2));
+    overallPnlPercent = numberWithCommas(overallPnlPercent.toFixed(2));
+    overallSum = numberWithCommas(overallSum.toFixed(2));
+
+
     const summary = {
         overallSum,
         overallPnl,
         overallPnlPercent,
+        overallPnlColor,
     };
+    
+    //format commas
+    for(let j=0; j<overallPortfolio.length;j++) {
+        if (overallPortfolio[j].pnl > 0){
+            overallPortfolio[j]['pnlColor'] = 1;
+        } else if (overallPortfolio[j].pnl < 0) {
+            overallPortfolio[j]['pnlColor'] = -1;
+        } else {
+            overallPortfolio[j]['pnlColor'] = 0;
+        }
+
+        for (const element in overallPortfolio[j]) {
+            if( typeof(overallPortfolio[j][`${element}`]) === "number" && element !== "pnlColor") {
+                overallPortfolio[j][`${element}`] = numberWithCommas(overallPortfolio[j][`${element}`].toFixed(2));
+            }
+        }
+    };
+
+    console.log(overallPortfolio);
 
     res.render("stock/index.ejs", {
         overallPortfolio,

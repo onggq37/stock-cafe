@@ -40,4 +40,8 @@ router.get('/logout', (req,res) => {
     req.flash("success", "See you soon, goodbye!");
     res.redirect('/login');
 })
+
+router.get('/', (req,res) => {
+    res.redirect('/login');
+})
 module.exports = router;

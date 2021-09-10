@@ -9,17 +9,17 @@
             <table class="table">
                 <tr>
                     <td class="col-10">Total</td>
-                    <td>USD <%= summary.overallSum %></td>
-                    <td><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#pnlContainer" aria-expanded="false" aria-controls="collapseOverview">+</button></td>
+                    <td col="col-1">USD <%= summary.overallSum %></td>
+                    <td col="col-1"><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#pnlContainer" aria-expanded="false" aria-controls="collapseOverview">+</button></td>
                 </tr>
                 <tr class="collapse " id='pnlContainer'>
                     <td class="col-10">P&L</td>
-                        <% if( summary.overallPnl > 0 ) { %>
-                            <td class="text-success">+<%= summary.overallPnl.toFixed(2) %> (+<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
-                        <% } else if (summary.overallPnl < 0 ) { %> 
-                            <td class="text-danger"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                        <% if( summary.overallPnlColor > 0 ) { %>
+                            <td class="text-success" colspan="2">+<%= summary.overallPnl %> (+<%= summary.overallPnlPercent %>%)</td>
+                        <% } else if (summary.overallPnlColor < 0 ) { %> 
+                            <td class="text-danger" colspan="2"><%= summary.overallPnl %> (<%= summary.overallPnlPercent %>%)</td>
                         <% } else { %> 
-                            <td class="text-secondary"><%= summary.overallPnl.toFixed(2) %> (<%= summary.overallPnlPercent.toFixed(2) %>%)</td>
+                            <td class="text-secondary" colspan="2"><%= summary.overallPnl %> (<%= summary.overallPnlPercent %>%)</td>
                         <% } %>
                 </tr>
             </table>
@@ -31,33 +31,34 @@
             <% for(const element of overallPortfolio) { %>
                 <table class="table">
                     <tr>
-                        <td colspan="2"><%= element.name %> (<%= element._id %>)</td>
+                        <td ><%= element.name %> (<%= element._id %>)</td>
+                        <td class="text-end"><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target='#<%=element._id %>Container' aria-expanded="false" aria-controls="collapseOverview">+</button></td>
                     </tr>
-                    <tr>
+                    <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">P&L</td>
-                        <% if( element.pnl > 0 ) { %>
-                            <td class="text-success">+<%= element.pnl.toFixed(2) %> (+<%= element.pnlPercent.toFixed(2) %>%)<td>
-                        <% } else if (element.pnl < 0 ) { %> 
-                            <td class="text-danger"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                        <% if( element.pnlColor > 0 ) { %>
+                            <td class="text-success col-2">+<%= element.pnl %> (+<%= element.pnlPercent %>%)<td>
+                        <% } else if (element.pnlColor < 0 ) { %> 
+                            <td class="text-danger col-2"><%= element.pnl %> (<%= element.pnlPercent %>%)</td>
                         <% } else { %> 
-                            <td class="text-secondary"><%= element.pnl.toFixed(2) %> (<%= element.pnlPercent.toFixed(2) %>%)</td>
+                            <td class="text-secondary col-2"><%= element.pnl %> (<%= element.pnlPercent %>%)</td>
                         <% } %>
                     </tr>
-                    <tr>
+                    <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Average Price</td>
-                        <td class="col"><%= element.avgPrice.toFixed(2) %></td>
+                        <td class="col-2"><%= element.avgPrice %></td>
                     </tr>
-                    <tr>
+                    <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Latest Close</td>
-                        <td class="col"><%= element.close %></td>
+                        <td class="col-2"><%= element.close %></td>
                     </tr>
-                    <tr>
+                    <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Shares</td>
-                        <td class="col"><%= element.totalUnits %></td>
+                        <td class="col-2"><%= element.totalUnits %></td>
                     </tr>
-                    <tr>
+                    <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Value</td>
-                        <td class="col">USD <%= element.value.toFixed(2) %></td>
+                        <td class="col-2">USD <%= element.value %></td>
                     </tr>
                 </table>
             <% } %> 
