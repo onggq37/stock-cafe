@@ -12,6 +12,7 @@ const port = process.env.PORT;
 
 const stockCafeRoute = require('./controllers/stockCafe');
 const userAuthRoute = require('./controllers/userAuth');
+const homePageRoute = require('./controllers/homePage');
 
 //Mongo Connection
 const mongoURI = process.env.MONGOURL;
@@ -56,6 +57,7 @@ app.use((req,res,next) => {
 
 app.use('/stockCafe', stockCafeRoute);
 app.use('/', userAuthRoute);
+app.use('/', homePageRoute);
 
 app.listen(process.env.PORT, () => {
     console.log("hello world");
