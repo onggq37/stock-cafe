@@ -9,8 +9,8 @@
             <table class="table">
                 <tr>
                     <td class="col-10">Total</td>
-                    <td col="col-1">USD <%= summary.overallSum %></td>
-                    <td col="col-1"><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#pnlContainer" aria-expanded="false" aria-controls="collapseOverview">+</button></td>
+                    <td >USD <%= summary.overallSum %></td>
+                    <td class="text-end"><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#pnlContainer" aria-expanded="false" aria-controls="collapseOverview">+</button></td>
                 </tr>
                 <tr class="collapse " id='pnlContainer'>
                     <td class="col-10">P&L</td>
@@ -31,7 +31,7 @@
             <% for(const element of overallPortfolio) { %>
                 <table class="table">
                     <tr>
-                        <td ><%= element.name %> (<%= element._id %>)</td>
+                        <td colspan="2"><%= element.name %> (<%= element._id %>)</td>
                         <td class="text-end"><button class="btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target='#<%=element._id %>Container' aria-expanded="false" aria-controls="collapseOverview">+</button></td>
                     </tr>
                     <tr class="collapse" id='<%=element._id %>Container'>
@@ -46,19 +46,19 @@
                     </tr>
                     <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Average Price</td>
-                        <td class="col-2"><%= element.avgPrice %></td>
+                        <td class="col-2" colspan="2"><%= element.avgPrice %></td>
                     </tr>
                     <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Latest Close</td>
-                        <td class="col-2"><%= element.close %></td>
+                        <td class="col-2" colspan="2"><%= element.close %></td>
                     </tr>
                     <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Shares</td>
-                        <td class="col-2"><%= element.totalUnits %></td>
+                        <td class="col-2" colspan="2"><%= element.totalUnits %></td>
                     </tr>
                     <tr class="collapse" id='<%=element._id %>Container'>
                         <td class="col-10">Value</td>
-                        <td class="col-2">USD <%= element.value %></td>
+                        <td class="col-2" colspan="2">USD <%= element.value %></td>
                     </tr>
                 </table>
             <% } %> 
