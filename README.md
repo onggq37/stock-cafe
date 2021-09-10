@@ -1,5 +1,5 @@
 # stock-cafe
-web app to track your stock portfolio
+web app to track my stock portfolio
 
 thing i want to add
 - make row in table clickable instead of just the symbol
@@ -7,4 +7,4 @@ thing i want to add
 - add fee
 - add Ticker type and Pie chart
 - add daily p&l
-- handle error
+- handle error properly

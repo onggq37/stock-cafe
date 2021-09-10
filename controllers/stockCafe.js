@@ -172,7 +172,7 @@ router.get("/new", isLoggedIn, (req,res) => {
 //create
 router.post("/", isLoggedIn, async (req, res, next) => {
     const symbol = req.body.symbol;
-    try{
+    try {
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
         if ( getSymbolInfo.data.results === null) {
             req.flash("error","Symbol not found")
@@ -231,11 +231,12 @@ router.put("/:id", isLoggedIn, async (req,res) => {
                     price: req.body.price,
                 }
             }
-        )
-        req.flash("success", "Transaction updated successfully")
-        res.redirect("/stockCafe/transactions")
+        );
+        req.flash("success", "Transaction updated successfully");
+        res.redirect("/stockCafe/transactions");
     } catch(e) {
-
+        req.flash("error", "Missing field/s");
+        res.redirect(`/stockCafe/${req.params.id}`);
     }
 
 })
@@ -244,8 +245,8 @@ router.put("/:id", isLoggedIn, async (req,res) => {
 router.delete("/:id", isLoggedIn, async (req,res) => {
     try {
         await transactionModel.deleteOne({ _id: req.params.id});
-        req.flash("success","Transaction deleted successfully")
-        res.redirect("/stockCafe/transactions")
+        req.flash("success","Transaction deleted successfully");
+        res.redirect("/stockCafe/transactions");
     } catch(e) {
         req.flash('error', "Fail to delete. Please try again.");
         res.redirect(`/stockCafe/${req.params.id}`);

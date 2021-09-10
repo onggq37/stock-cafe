@@ -14,18 +14,20 @@
                     <label for="action" class="form-label">Action</label>
                     <br>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="action" id="buy" value="buy" checked>
                         <% if (singleTrans.action === 'buy') { %>
-                            <label class="form-check-label" for="buy" checked>Buy</label>
+                            <input class="form-check-input" type="radio" name="action" id="buy" value="buy" checked>
+                            <label class="form-check-label" for="buy">Buy</label>
                         <% } else { %> 
+                            <input class="form-check-input" type="radio" name="action" id="buy" value="buy">
                             <label class="form-check-label" for="buy">Buy</label>
                         <% } %>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="action" id="sell" value="sell">
                         <% if (singleTrans.action === 'sell') { %>
-                            <label class="form-check-label" for="sell" checked>Sell</label>
+                            <input class="form-check-input" type="radio" name="action" id="sell" value="sell" checked>
+                            <label class="form-check-label" for="sell">Sell</label>
                         <% } else { %> 
+                            <input class="form-check-input" type="radio" name="action" id="sell" value="sell">
                             <label class="form-check-label" for="sell">Sell</label>
                         <% } %>
                     </div>
