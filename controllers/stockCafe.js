@@ -133,7 +133,6 @@ router.get("/", isLoggedIn, async (req,res) => {
     overallPnlPercent = numberWithCommas(overallPnlPercent.toFixed(2));
     overallSum = numberWithCommas(overallSum.toFixed(2));
 
-
     const summary = {
         overallSum,
         overallPnl,
@@ -157,7 +156,6 @@ router.get("/", isLoggedIn, async (req,res) => {
             }
         }
     };
-
 
     res.render("stock/index.ejs", {
         overallPortfolio,
