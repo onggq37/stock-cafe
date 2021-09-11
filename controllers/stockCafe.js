@@ -24,13 +24,14 @@ function numberWithCommas(num) {
 //index
 router.get("/", isLoggedIn, async (req,res) => {
 
-    const allStocks = await transactionModel.find().distinct('symbol');
+    const allStocks = await transactionModel.find({ user: `${req.user.username}` }).distinct('symbol');
     const overallPortfolio = [];
     const overallBuy = await transactionModel.aggregate(
         [
             {
                 $match: {
-                    action: "buy"
+                    action: "buy",
+                    user: `${req.user.username}`
                 }
             },
             {
@@ -48,7 +49,8 @@ router.get("/", isLoggedIn, async (req,res) => {
         [
             {
                 $match: {
-                    action: "sell"
+                    action: "sell",
+                    user: `${req.user.username}`
                 }
             },
             {
@@ -82,7 +84,7 @@ router.get("/", isLoggedIn, async (req,res) => {
 
     //find average price of each stock
     for( let i=0; i<overallPortfolio.length; i++ ) {
-        const allTrans = await transactionModel.find({ symbol: overallPortfolio[i]._id, action: "buy" }).sort('-date');
+        const allTrans = await transactionModel.find({ user: `${req.user.username}`, symbol: overallPortfolio[i]._id, action: "buy" }).sort('-date');
         let calUnits = overallPortfolio[i].totalUnits;
         let totalPrice = 0;
         let avgPrice = 0;
@@ -172,6 +174,7 @@ router.get("/new", isLoggedIn, (req,res) => {
 //create
 router.post("/", isLoggedIn, async (req, res, next) => {
     const symbol = req.body.symbol;
+    console.log(req.user.username);
     try {
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
         if ( getSymbolInfo.data.results === null) {
@@ -188,6 +191,7 @@ router.post("/", isLoggedIn, async (req, res, next) => {
                 date: req.body.date,
                 units: req.body.units,
                 price: req.body.price,
+                user: req.user.username,
             }
             const newTransaction = await transactionModel.create(input);
             req.flash("success", "Successfully added a transaction")
@@ -202,7 +206,7 @@ router.post("/", isLoggedIn, async (req, res, next) => {
 
 //Show
 router.get("/transactions", isLoggedIn, async (req,res) => {
-    const transList = await transactionModel.find({}).sort('-date');
+    const transList = await transactionModel.find({ user: `${req.user.username}` }).sort('-date');
     res.render("stock/transaction.ejs", {
         transList,
     } );

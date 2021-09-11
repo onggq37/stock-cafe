@@ -30,7 +30,11 @@ const transactionSchema = new Schema (
         price: {
             type: Number,
             required: true,
-        }
+        },
+        user: {
+            type: String,
+            // required: true,
+        },
     }
 )
 

@@ -26,3 +26,6 @@ thing i want to add
 - handle error properly
 - add password strength
 - add authroization
+- add personal portfolio
+- add option for multiple portfolio (add a new key(eg, belongTo) in transaction model)
+- add different exchanges
