@@ -20,8 +20,9 @@ style login and register page
 
 thing i want to add
 - Add diviend
+- add price validation
 - add fee
-- add Ticker type and Pie chart
+- add Ticker type and Pie chart ( use chart.js )
 - add daily p&l
 - handle error properly
 - add password strength

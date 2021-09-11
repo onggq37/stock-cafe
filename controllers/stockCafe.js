@@ -163,18 +163,17 @@ router.get("/", isLoggedIn, async (req,res) => {
         overallPortfolio,
         summary,
     });
-})
+});
 
 //new
 router.get("/new", isLoggedIn, (req,res) => {
     res.render("stock/new.ejs", {
     });
-})
+});
 
 //create
 router.post("/", isLoggedIn, async (req, res, next) => {
     const symbol = req.body.symbol;
-    console.log(req.user.username);
     try {
         const getSymbolInfo = await axios.get(`https://api.polygon.io/v3/reference/tickers?ticker=${symbol}&active=true&sort=ticker&order=asc&limit=10&apiKey=S47tdjxsU3ApK1ky1qC426NglkL3DS4K`)
         if ( getSymbolInfo.data.results === null) {
@@ -210,7 +209,7 @@ router.get("/transactions", isLoggedIn, async (req,res) => {
     res.render("stock/transaction.ejs", {
         transList,
     } );
-})
+});
 
 //edit
 router.get("/:id/edit", isLoggedIn, async (req,res) => {
@@ -220,7 +219,7 @@ router.get("/:id/edit", isLoggedIn, async (req,res) => {
         singleTrans: singleTrans[0],
         date: getDate,
     });
-})
+});
 
 //update
 router.put("/:id", isLoggedIn, async (req,res) => {
@@ -242,8 +241,7 @@ router.put("/:id", isLoggedIn, async (req,res) => {
         req.flash("error", "Missing field/s");
         res.redirect(`/stockCafe/${req.params.id}`);
     }
-
-})
+});
 
 //destroy
 router.delete("/:id", isLoggedIn, async (req,res) => {
@@ -256,6 +254,6 @@ router.delete("/:id", isLoggedIn, async (req,res) => {
         res.redirect(`/stockCafe/${req.params.id}`);
     }
 
-})
+});
 
 module.exports = router;
