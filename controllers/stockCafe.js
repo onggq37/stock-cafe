@@ -214,6 +214,10 @@ router.get("/transactions", isLoggedIn, async (req,res) => {
 //edit
 router.get("/:id/edit", isLoggedIn, async (req,res) => {
     const singleTrans = await transactionModel.find({ _id: `${req.params.id}` });
+    if ( req.user.username !== singleTrans[0].user ){
+        req.flash('error', 'Hacker alert!');
+        return res.redirect('/stockCafe');
+    }
     const getDate = formatDate(singleTrans[0].date)
     res.render("stock/edit.ejs",{
         singleTrans: singleTrans[0],
@@ -245,6 +249,11 @@ router.put("/:id", isLoggedIn, async (req,res) => {
 
 //destroy
 router.delete("/:id", isLoggedIn, async (req,res) => {
+    const singleTrans = await transactionModel.find({ _id: `${req.params.id}` });
+    if ( req.user.username !== singleTrans[0].user ){
+        req.flash('error','Hacker Alert!');
+        return res.redirect(`/stockCafe/`);
+    }
     try {
         await transactionModel.deleteOne({ _id: req.params.id});
         req.flash("success","Transaction deleted successfully");
@@ -253,7 +262,6 @@ router.delete("/:id", isLoggedIn, async (req,res) => {
         req.flash('error', "Fail to delete. Please try again.");
         res.redirect(`/stockCafe/${req.params.id}`);
     }
-
 });
 
 module.exports = router;
